@@ -7,6 +7,8 @@ import cc.synkdev.nah.objects.ItemSort;
 import cc.synkdev.nah.objects.SortingTypes;
 import cc.synkdev.nexusCore.bukkit.Analytics;
 import cc.synkdev.nexusCore.bukkit.Lang;
+import cc.synkdev.nexusCore.bukkit.UpdateChecker;
+import cc.synkdev.nexusCore.bukkit.Utils;
 import cc.synkdev.nexusCore.components.NexusPlugin;
 import co.aikar.commands.BukkitCommandManager;
 import co.aikar.commands.MessageKeys;
@@ -63,6 +65,7 @@ public final class NexusAuctionHouse extends JavaPlugin implements NexusPlugin, 
     @Getter private String dateFormat;
     @Getter private int minPrice;
     @Getter private int maxPrice;
+    private boolean crashed = true;
 
     @Override
     public void onEnable() {
@@ -126,6 +129,7 @@ public final class NexusAuctionHouse extends JavaPlugin implements NexusPlugin, 
 
             //72000 ticks = 1 hour on 20 tps
             purgeLogs.runTaskTimer(this, 72000L, 72000L);
+            crashed = false;
         }
     }
 
@@ -254,7 +258,12 @@ public final class NexusAuctionHouse extends JavaPlugin implements NexusPlugin, 
 
     public void reloadLang() {
         langMap.clear();
-        langMap.putAll(Lang.init(this, langFile, lang));
+        try {
+            langMap.putAll(Lang.init(this, langFile, lang));
+        } catch (NoSuchMethodError e) {
+            UpdateChecker.update(UpdateChecker.checkOutated());
+            Utils.log("&4Your NexusCore install seems to be outdated! Please restart your server to update it.");
+        }
     }
 
     public void save() {
@@ -290,7 +299,7 @@ public final class NexusAuctionHouse extends JavaPlugin implements NexusPlugin, 
 
     @Override
     public void onDisable() {
-        if (missingDeps.isEmpty()) DataFileManager.save();
+        if (missingDeps.isEmpty() && !crashed) DataFileManager.save();
     }
 
     @Override
@@ -300,7 +309,7 @@ public final class NexusAuctionHouse extends JavaPlugin implements NexusPlugin, 
 
     @Override
     public String ver() {
-        return "2.2.3";
+        return "2.2.5";
     }
 
     @Override
