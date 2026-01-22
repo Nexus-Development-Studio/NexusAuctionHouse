@@ -157,6 +157,33 @@ public class DataFileManager {
                     retrieveMap.put(UUID.fromString(uuid), list);
                 }
             }
+
+            int id = 0;
+            List<Integer> ids = new ArrayList<>();
+            for (BINAuction bin : expiredBins) {
+                if (bin.getId()>=id) id = bin.getId()+1;
+                if (ids.contains(bin.getId())) {
+                    int iid = id;
+                    while (ids.contains(iid)) {
+                        iid++;
+                    }
+                    bin.setId(iid);
+                    id = iid+1;
+                }
+                ids.add(bin.getId());
+            }
+            for (BINAuction bin : running) {
+                if (bin.getId()>=id) id = bin.getId()+1;
+                if (ids.contains(bin.getId())) {
+                    int iid = id;
+                    while (ids.contains(iid)) {
+                        iid++;
+                    }
+                    bin.setId(iid);
+                    id = iid+1;
+                }
+                ids.add(bin.getId());
+            }
             core.expiredBINs.addAll(expiredBins);
             core.runningBINs.addAll(running);
             core.retrieveMap.putAll(retrieveMap);
