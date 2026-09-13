@@ -175,7 +175,7 @@ public final class NexusAuctionHouse extends JavaPlugin implements NexusPlugin, 
             for (BINAuction bA : list) {
                 runningBINs.remove(bA);
                 expiredBINs.add(bA);
-                WebhookManager.sendWebhook("listing-expired", null, Util.getName(bA.getSeller()));
+                WebhookManager.sendWebhook("listing-expired", bA, Util.getName(bA.getSeller()));
                 if (retrieveMap.containsKey(bA.getSeller())) {
                     List<ItemStack> users = new ArrayList<>(retrieveMap.get(bA.getSeller()));
                     users.add(bA.getItem());
@@ -255,7 +255,7 @@ public final class NexusAuctionHouse extends JavaPlugin implements NexusPlugin, 
 
     @Override
     public String ver() {
-        return "2.4.2";
+        return "2.4.3";
     }
 
     @Override

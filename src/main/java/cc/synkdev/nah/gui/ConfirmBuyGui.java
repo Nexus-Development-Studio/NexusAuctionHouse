@@ -42,7 +42,7 @@ public class ConfirmBuyGui {
         return ItemBuilder.from(bA.getItem()).asGuiItem();
     }
     GuiItem confirm(BINAuction bAa) {
-        int tax = Math.toIntExact(Math.round(bAa.getPrice()*((double) core.getBuyTaxPercent()/100)));
+        double tax = Math.round(bAa.getPrice()*((double) core.getBuyTaxPercent()/100));
         ItemStack item = new ItemStack(Material.GREEN_WOOL);
         ItemMeta meta = item.getItemMeta();
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
