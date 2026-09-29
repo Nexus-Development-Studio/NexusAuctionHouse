@@ -9,10 +9,12 @@ import java.awt.*;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
+import java.net.URI;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 public class DiscordWebhook {
 
     private final String url;
@@ -20,7 +22,7 @@ public class DiscordWebhook {
     @Setter private String username;
     @Setter private String avatarUrl;
     @Setter private boolean tts;
-    private List<EmbedObject> embeds = new ArrayList<>();
+    private final List<EmbedObject> embeds = new ArrayList<>();
 
 
     public DiscordWebhook(String url) {
@@ -133,8 +135,8 @@ public class DiscordWebhook {
             json.put("embeds", embedObjects.toArray());
         }
 
-        URL url = new URL(this.url);
-        HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+        URL wUrl = URI.create(url).toURL();
+        HttpsURLConnection connection = (HttpsURLConnection) wUrl.openConnection();
         connection.addRequestProperty("Content-Type", "application/json");
         connection.addRequestProperty("User-Agent", "Java-DiscordWebhook-BY-Gelox_");
         connection.setDoOutput(true);
@@ -149,6 +151,7 @@ public class DiscordWebhook {
         connection.disconnect();
     }
 
+    @SuppressWarnings("unused")
     public static class EmbedObject {
         @Getter private String title;
         @Getter private String description;
@@ -159,7 +162,7 @@ public class DiscordWebhook {
         @Getter private Thumbnail thumbnail;
         @Getter private Image image;
         @Getter private Author author;
-        @Getter private List<Field> fields = new ArrayList<>();
+        @Getter private final List<Field> fields = new ArrayList<>();
 
         public EmbedObject setTitle(String title) {
             this.title = title;
@@ -207,8 +210,8 @@ public class DiscordWebhook {
         }
 
         private class Footer {
-            @Getter private String text;
-            @Getter private String iconUrl;
+            @Getter private final String text;
+            @Getter private final String iconUrl;
 
             private Footer(String text, String iconUrl) {
                 this.text = text;
@@ -217,7 +220,7 @@ public class DiscordWebhook {
         }
 
         private class Thumbnail {
-            @Getter private String url;
+            @Getter private final String url;
 
             private Thumbnail(String url) {
                 this.url = url;
@@ -225,7 +228,7 @@ public class DiscordWebhook {
         }
 
         private class Image {
-            private String url;
+            private final String url;
 
             private Image(String url) {
                 this.url = url;
@@ -237,9 +240,9 @@ public class DiscordWebhook {
         }
 
         private class Author {
-            private String name;
-            private String url;
-            private String iconUrl;
+            private final String name;
+            private final String url;
+            private final String iconUrl;
 
             private Author(String name, String url, String iconUrl) {
                 this.name = name;
@@ -261,9 +264,9 @@ public class DiscordWebhook {
         }
 
         private class Field {
-            private String name;
-            private String value;
-            private boolean inline;
+            private final String name;
+            private final String value;
+            private final boolean inline;
 
             private Field(String name, String value, boolean inline) {
                 this.name = name;
@@ -313,7 +316,7 @@ public class DiscordWebhook {
                 } else if (val instanceof Boolean) {
                     builder.append(val);
                 } else if (val instanceof JSONObject) {
-                    builder.append(val.toString());
+                    builder.append(val);
                 } else if (val.getClass().isArray()) {
                     builder.append("[");
                     int len = Array.getLength(val);

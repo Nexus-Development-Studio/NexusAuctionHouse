@@ -4,15 +4,22 @@ import cc.synkdev.nah.NexusAuctionHouse;
 import org.bukkit.Material;
 
 import java.io.*;
+import java.nio.file.Files;
 
 public class BannedItemsManager {
+    private BannedItemsManager() {
+        /* This utility class should not be instantiated */
+    }
+
     private static final NexusAuctionHouse core = NexusAuctionHouse.getInstance();
-    private static File file = new File(new File(core.getDataFolder(), "data"), "banned.yml");
+    private static final File file = new File(new File(core.getDataFolder(), "data"), "banned.yml");
     public static void add(Material m) {
         if (!core.banned.contains(m)) core.banned.add(m);
         try {
-            if (!file.getParentFile().exists()) file.getParentFile().mkdirs();
-            if (!file.exists()) file.createNewFile();
+            if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) throw new IOException("Failed to create data folder");
+
+            if (!file.exists() && !file.createNewFile()) throw new IOException("Failed to create banned.yml file");
+
             BufferedWriter writer = new BufferedWriter(new FileWriter(file));
             writer.write(m.name());
             writer.newLine();
@@ -24,8 +31,8 @@ public class BannedItemsManager {
     public static void remove(Material m) {
         core.banned.remove(m);
         try {
-            file.delete();
-            file.createNewFile();
+            Files.delete(file.toPath());
+            if (!file.createNewFile()) throw new IOException("Failed to create banned.yml file");
             BufferedWriter writer = new BufferedWriter(new FileWriter(file));
             for (Material material : core.banned) {
                 writer.write(material.name());

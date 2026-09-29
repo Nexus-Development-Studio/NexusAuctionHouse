@@ -19,8 +19,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class LogsGui {
-    NexusAuctionHouse core = NexusAuctionHouse.getInstance();
-    int max = (core.expiredBINs.size()/10)+1;
+    private final NexusAuctionHouse core = NexusAuctionHouse.getInstance();
+    private final int max = (core.expiredBINs.size()/10)+1;
     public Gui gui(int page) {
         Gui gui = Gui.gui()
                 .disableAllInteractions()
@@ -63,8 +63,7 @@ public class LogsGui {
     }
     GuiItem expiredItem(BINAuction bA) {
         ItemStack copy = bA.getItem().clone();
-        List<Component> lore = new ArrayList<>();
-        lore.addAll(Util.loreToComps(bA.getItem()));
+        List<Component> lore = new ArrayList<>(Util.loreToComps(bA.getItem()));
         if (bA.getBuyer() == null) {
             lore.addAll(Arrays.asList(LegacyComponentSerializer.legacyAmpersand().deserialize(""), LegacyComponentSerializer.legacyAmpersand().deserialize("  "+ChatColor.YELLOW+ Lang.translate("expiredWord", core))));
         } else {

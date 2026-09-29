@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class RetrieveGui {
-    NexusAuctionHouse core = NexusAuctionHouse.getInstance();
+    private final NexusAuctionHouse core = NexusAuctionHouse.getInstance();
     int max = 0;
     public Gui gui(Player p, int page) {
         max = (core.retrieveMap.getOrDefault(p.getUniqueId(), new ArrayList<>()).size()/10)+1;

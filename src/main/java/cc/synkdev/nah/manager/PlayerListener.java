@@ -13,7 +13,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onJoin (PlayerJoinEvent event) {
         Player p = event.getPlayer();
-        if (core.retrieveMap.containsKey(p)) {
+        if (core.retrieveMap.containsKey(p.getUniqueId()) && !core.retrieveMap.get(p.getUniqueId()).isEmpty()) {
             p.sendMessage(core.prefix()+ ChatColor.GOLD+ Lang.translate("notifyExpîred", core));
         }
     }

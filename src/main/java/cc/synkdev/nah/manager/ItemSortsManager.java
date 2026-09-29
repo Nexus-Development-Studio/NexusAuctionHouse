@@ -13,8 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ItemSortsManager {
+    private ItemSortsManager() {
+        /* This utility class should not be instantiated */
+    }
+
     private static final NexusAuctionHouse core = NexusAuctionHouse.getInstance();
-    private static File file = new File(new File(core.getDataFolder(), "data"), "sorts.json");
+    private static final File file = new File(new File(core.getDataFolder(), "data"), "sorts.json");
     public static void read() {
         core.itemSorts.clear();
         if (file.exists()) {
@@ -25,7 +29,7 @@ public class ItemSortsManager {
                 while ((ln = reader.readLine()) != null) {
                     sb.append(ln);
                 }
-                if (sb.toString().isEmpty()) return;
+                if (sb.isEmpty()) return;
                 JSONObject obj = new JSONObject(sb.toString());
                 for (Object o : obj.getJSONArray("sorts")) {
                     JSONObject sort = (JSONObject) o;
@@ -41,7 +45,7 @@ public class ItemSortsManager {
             }
         } else {
             try {
-                file.createNewFile();
+                if (!file.createNewFile()) throw new IOException("Failed to create sorts.json");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

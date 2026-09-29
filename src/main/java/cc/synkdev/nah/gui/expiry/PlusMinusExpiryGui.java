@@ -14,7 +14,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 public class PlusMinusExpiryGui {
-    NexusAuctionHouse core = NexusAuctionHouse.getInstance();
+    private final NexusAuctionHouse core = NexusAuctionHouse.getInstance();
     public Gui gui(BINAuction bA) {
         Gui gui = Gui.gui()
                 .disableAllInteractions()
@@ -38,7 +38,7 @@ public class PlusMinusExpiryGui {
                 .asGuiItem(event -> {
                     NAHUtil.setExpiry(bA, bA.getExpiry() + 600, event.getWhoClicked().getName());
                     ((Player) event.getWhoClicked()).playSound(event.getWhoClicked().getLocation(), "entity.experience_orb.pickup", 1, 1);
-                    this.gui(NAHUtil.getAuction(bA.getId())).open((Player) event.getWhoClicked());
+                    this.gui(NAHUtil.getAuction(bA.getId())).open(event.getWhoClicked());
                 });
         gui.setItem(1, 7, plusMins);
         gui.setItem(2, 7, plusMins);
@@ -49,7 +49,7 @@ public class PlusMinusExpiryGui {
                 .asGuiItem(event -> {
                     NAHUtil.setExpiry(bA, bA.getExpiry() + 3600, event.getWhoClicked().getName());
                     ((Player) event.getWhoClicked()).playSound(event.getWhoClicked().getLocation(), "entity.experience_orb.pickup", 1, 1);
-                    this.gui(NAHUtil.getAuction(bA.getId())).open((Player) event.getWhoClicked());
+                    this.gui(NAHUtil.getAuction(bA.getId())).open(event.getWhoClicked());
                 });
         gui.setItem(1, 8, plusHr);
         gui.setItem(2, 8, plusHr);
@@ -60,7 +60,7 @@ public class PlusMinusExpiryGui {
                 .asGuiItem(event -> {
                     NAHUtil.setExpiry(bA, bA.getExpiry() + (3600*24), event.getWhoClicked().getName());
                     ((Player) event.getWhoClicked()).playSound(event.getWhoClicked().getLocation(), "entity.experience_orb.pickup", 1, 1);
-                    this.gui(NAHUtil.getAuction(bA.getId())).open((Player) event.getWhoClicked());
+                    this.gui(NAHUtil.getAuction(bA.getId())).open(event.getWhoClicked());
                 });
         gui.setItem(1, 9, plusDay);
         gui.setItem(2, 9, plusDay);
@@ -71,7 +71,7 @@ public class PlusMinusExpiryGui {
                 .asGuiItem(event -> {
                     NAHUtil.setExpiry(bA, bA.getExpiry() - 600, event.getWhoClicked().getName());
                     ((Player) event.getWhoClicked()).playSound(event.getWhoClicked().getLocation(), "entity.experience_orb.pickup", 1, 1);
-                    this.gui(NAHUtil.getAuction(bA.getId())).open((Player) event.getWhoClicked());
+                    this.gui(NAHUtil.getAuction(bA.getId())).open(event.getWhoClicked());
                 });
         gui.setItem(1, 3, minMins);
         gui.setItem(2, 3, minMins);
@@ -82,7 +82,7 @@ public class PlusMinusExpiryGui {
                 .asGuiItem(event -> {
                     NAHUtil.setExpiry(bA, bA.getExpiry() - 3600, event.getWhoClicked().getName());
                     ((Player) event.getWhoClicked()).playSound(event.getWhoClicked().getLocation(), "entity.experience_orb.pickup", 1, 1);
-                    this.gui(NAHUtil.getAuction(bA.getId())).open((Player) event.getWhoClicked());
+                    this.gui(NAHUtil.getAuction(bA.getId())).open(event.getWhoClicked());
                 });
         gui.setItem(1, 2, minHr);
         gui.setItem(2, 2, minHr);
@@ -93,7 +93,7 @@ public class PlusMinusExpiryGui {
                 .asGuiItem(event -> {
                     NAHUtil.setExpiry(bA, bA.getExpiry() - (3600*24), event.getWhoClicked().getName());
                     ((Player) event.getWhoClicked()).playSound(event.getWhoClicked().getLocation(), "entity.experience_orb.pickup", 1, 1);
-                    this.gui(NAHUtil.getAuction(bA.getId())).open((Player) event.getWhoClicked());
+                    this.gui(NAHUtil.getAuction(bA.getId())).open(event.getWhoClicked());
                 });
         gui.setItem(1, 1, minDay);
         gui.setItem(2, 1, minDay);

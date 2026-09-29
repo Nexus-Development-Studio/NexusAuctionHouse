@@ -1,19 +1,17 @@
 package cc.synkdev.nah.gui.sort;
 
+import cc.synkdev.kyori.adventure.text.Component;
 import cc.synkdev.nah.NexusAuctionHouse;
 import cc.synkdev.nah.manager.Util;
 import cc.synkdev.nah.objects.ItemSort;
 import cc.synkdev.nexusCore.bukkit.Lang;
 import cc.synkdev.triumph.builder.item.ItemBuilder;
 import cc.synkdev.triumph.guis.Gui;
-import cc.synkdev.kyori.adventure.text.Component;
 import cc.synkdev.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 
@@ -40,12 +38,8 @@ public class SortsManagementGui {
 
                     AnvilGUI.Builder builder = new AnvilGUI.Builder();
                     builder.plugin(core);
-
-                    ItemStack item = new ItemStack(Material.PAPER);
-                    ItemMeta meta = item.getItemMeta();
-                    meta.setDisplayName(Lang.translate("enterName", core));
-                    item.setItemMeta(meta);
-                    builder.itemLeft(item);
+                    builder.itemLeft(ItemBuilder.from(Material.PAPER)
+                            .name(Component.text(Util.translate("enterName"))).build());
                     builder.text(Lang.translate("enterName", core));
                     builder.onClick((integer, stateSnapshot) -> {
                         if (integer != 2) {
@@ -67,7 +61,7 @@ public class SortsManagementGui {
         for (int i = min; i < max; i++) {
             if (core.itemSorts.size() > i) {
                 ItemSort sort = core.itemSorts.entrySet().stream().toList().get(i).getValue();
-                gui.setItem(i - min, ItemBuilder.from(sort.getIcon()).name(LegacyComponentSerializer.legacyAmpersand().deserialize(ChatColor.YELLOW+sort.getName())).asGuiItem(event -> new EditSortGui().gui(sort).open((Player) event.getWhoClicked())));
+                gui.setItem(i - min, ItemBuilder.from(sort.getIcon()).name(LegacyComponentSerializer.legacyAmpersand().deserialize(ChatColor.YELLOW+sort.getName())).asGuiItem(event -> new EditSortGui().gui(sort).open(event.getWhoClicked())));
             }
         }
 

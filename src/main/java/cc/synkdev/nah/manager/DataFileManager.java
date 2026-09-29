@@ -13,6 +13,10 @@ import java.util.*;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class DataFileManager {
+    private DataFileManager() {
+        /* This utility class should not be instantiated */
+    }
+
     private static final NexusAuctionHouse core = NexusAuctionHouse.getInstance();
     private static final File folder = new File(core.getDataFolder(), "data");
     private static final File yml = new File(folder, "bins.yml");
@@ -23,8 +27,13 @@ public class DataFileManager {
     public static void init() {
         try {
             if (!folder.exists()) folder.mkdirs();
-            if (!json.exists()) json.createNewFile();
-            if (!expiredJson.exists()) expiredJson.createNewFile();
+            if (!json.exists() && !json.createNewFile()) {
+                    throw new IOException("Failed to create bins.json");
+                }
+
+            if (!expiredJson.exists() && !expiredJson.createNewFile()) {
+                throw new IOException("Failed to create expired-retrieve.json");
+            }
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -78,8 +87,8 @@ public class DataFileManager {
             core.runningBINs.addAll(running);
             core.retrieveMap.putAll(retrieveMap);
 
-            yml.delete();
-            expiredYml.delete();
+            Files.delete(yml.toPath());
+            Files.delete(expiredYml.toPath());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -105,9 +114,9 @@ public class DataFileManager {
 
             reader.close();
 
-            if (!sb.toString().isEmpty()) {
+            if (!sb.isEmpty()) {
                 JSONObject binsO = new JSONObject(sb.toString());
-                if (binsO.has("money")) core.money = binsO.getInt("money");
+                if (binsO.has("money")) core.money = binsO.getDouble("money");
                 JSONArray bins = binsO.getJSONArray("bins");
                 for (Object o : bins) {
                     JSONObject obj = (JSONObject) o;
@@ -142,7 +151,7 @@ public class DataFileManager {
             }
 
             reader.close();
-            if (!sb.toString().isEmpty()) {
+            if (!sb.isEmpty()) {
                 JSONObject expiredObj = new JSONObject(sb.toString());
                 JSONArray players = expiredObj.getJSONArray("players");
                 for (Object o : players) {
@@ -160,36 +169,30 @@ public class DataFileManager {
 
             int id = 0;
             List<Integer> ids = new ArrayList<>();
-            for (BINAuction bin : expiredBins) {
-                if (bin.getId()>=id) id = bin.getId()+1;
-                if (ids.contains(bin.getId())) {
-                    int iid = id;
-                    while (ids.contains(iid)) {
-                        iid++;
-                    }
-                    bin.setId(iid);
-                    id = iid+1;
-                }
-                ids.add(bin.getId());
-            }
-            for (BINAuction bin : running) {
-                if (bin.getId()>=id) id = bin.getId()+1;
-                if (ids.contains(bin.getId())) {
-                    int iid = id;
-                    while (ids.contains(iid)) {
-                        iid++;
-                    }
-                    bin.setId(iid);
-                    id = iid+1;
-                }
-                ids.add(bin.getId());
-            }
+            id = cacheIds(expiredBins, id, ids);
+            cacheIds(running, id, ids);
             core.expiredBINs.addAll(expiredBins);
             core.runningBINs.addAll(running);
             core.retrieveMap.putAll(retrieveMap);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static int cacheIds(List<BINAuction> expiredBins, int id, List<Integer> ids) {
+        for (BINAuction bin : expiredBins) {
+            if (bin.getId()>=id) id = bin.getId()+1;
+            if (ids.contains(bin.getId())) {
+                int iid = id;
+                while (ids.contains(iid)) {
+                    iid++;
+                }
+                bin.setId(iid);
+                id = iid+1;
+            }
+            ids.add(bin.getId());
+        }
+        return id;
     }
 
     public static void sort() {

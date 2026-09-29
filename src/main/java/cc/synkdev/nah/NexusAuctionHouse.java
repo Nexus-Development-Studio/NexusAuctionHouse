@@ -43,22 +43,22 @@ public final class NexusAuctionHouse extends JavaPlugin implements NexusPlugin, 
     @Getter private long expireTime;
     @Getter private int buyTaxPercent;
     @Getter private int sellTaxPercent;
-    public String lang;
-    public List<BINAuction> expiredBINs = new ArrayList<>();
-    public List<BINAuction> runningBINs = new ArrayList<>();
-    public List<BINAuction> sortPrice = new ArrayList<>();
-    public List<BINAuction> sortPriceMax = new ArrayList<>();
-    public List<BINAuction> sortExpiry = new ArrayList<>();
-    public List<BINAuction> sortExpiryMax = new ArrayList<>();
-    public Map<String, ItemSort> itemSorts = new HashMap<>();
-    public Map<UUID, SortingTypes> playerSortingTypes = new HashMap<>();
-    public Map<UUID, List<ItemStack>> retrieveMap = new HashMap<>();
+    public String language;
+    public final List<BINAuction> expiredBINs = new ArrayList<>();
+    public final List<BINAuction> runningBINs = new ArrayList<>();
+    public final List<BINAuction> sortPrice = new ArrayList<>();
+    public final List<BINAuction> sortPriceMax = new ArrayList<>();
+    public final List<BINAuction> sortExpiry = new ArrayList<>();
+    public final List<BINAuction> sortExpiryMax = new ArrayList<>();
+    public final Map<String, ItemSort> itemSorts = new HashMap<>();
+    public final Map<UUID, SortingTypes> playerSortingTypes = new HashMap<>();
+    public final Map<UUID, List<ItemStack>> retrieveMap = new HashMap<>();
     public List<SortingTypes> sortingTypes;
-    public int money = 0;
+    public double money = 0;
     @Getter private Economy econ = null;
-    public Map<String, String> langMap = new HashMap<>();
-    public List<Material> banned = new ArrayList<>();
-    public List<String> missingDeps = new ArrayList<>();
+    public final Map<String, String> localLangMap = new HashMap<>();
+    public final List<Material> banned = new ArrayList<>();
+    public final List<String> missingDeps = new ArrayList<>();
     @Getter @Setter private Boolean toggle = true;
     @Getter @Setter private int id = 0;
     @Getter private String dateFormat;
@@ -72,7 +72,7 @@ public final class NexusAuctionHouse extends JavaPlugin implements NexusPlugin, 
     private final BukkitContext context = new BukkitContext.Factory(this, "b055286b23207690c984a5efc2b98e1d")
             .errorTrackerService(ERROR_TRACKER)
             .metrics(factory -> factory.addMetric(Metric.number("money", () -> money))
-                    .addMetric(Metric.number("volume", () -> runningBINs.size()))
+                    .addMetric(Metric.number("volume", runningBINs::size))
                     .addMetric(Metric.bool("premium", () -> false))
                     .create())
             .create();
@@ -99,7 +99,7 @@ public final class NexusAuctionHouse extends JavaPlugin implements NexusPlugin, 
             config = NexusUtils.updateConfig(this);
             loadConfig();
 
-            NexusUtils.initLang(this, langMap, lang);
+            NexusUtils.initLang(this, localLangMap, language);
 
             DataFileManager.init();
             DataFileManager.load();
@@ -107,8 +107,8 @@ public final class NexusAuctionHouse extends JavaPlugin implements NexusPlugin, 
             loadSorts();
 
             Metrics metrics = new Metrics(this, 23102);
-            metrics.addCustomChart(new SingleLineChart("money", () -> money));
-            metrics.addCustomChart(new SingleLineChart("volume", () -> runningBINs.size()));
+            metrics.addCustomChart(new SingleLineChart("money", () -> (int) money));
+            metrics.addCustomChart(new SingleLineChart("volume", runningBINs::size));
             metrics.addCustomChart(new SimplePie("free", () -> "Free"));
             context.ready();
 
@@ -168,7 +168,10 @@ public final class NexusAuctionHouse extends JavaPlugin implements NexusPlugin, 
             for (BINAuction binAuction : runningBINs) {
                 int time = Math.toIntExact(System.currentTimeMillis()/1000);
                 if (time>=binAuction.getExpiry()) {
-                    if (Util.isOnline(binAuction.getSeller())) Bukkit.getPlayer(binAuction.getSeller()).sendMessage(prefix()+ChatColor.GOLD+Lang.translate("expired", getInstance()));
+                    if (Util.isOnline(binAuction.getSeller())) {
+                        assert Bukkit.getPlayer(binAuction.getSeller()) != null;
+                        Bukkit.getPlayer(binAuction.getSeller()).sendMessage(prefix()+ChatColor.GOLD+Lang.translate("expired", getInstance()));
+                    }
                     list.add(binAuction);
                 }
             }
@@ -197,7 +200,7 @@ public final class NexusAuctionHouse extends JavaPlugin implements NexusPlugin, 
             return false;
         }
         econ = rsp.getProvider();
-        return econ != null;
+        return true;
     }
     public void loadConfig() {
         reloadConfig();
@@ -208,7 +211,7 @@ public final class NexusAuctionHouse extends JavaPlugin implements NexusPlugin, 
         dateFormat = getConfig().getString("date-format");
         minPrice = getConfig().getInt("price-limits.min");
         maxPrice = getConfig().getInt("price-limits.max");
-        lang = getConfig().getString("lang");
+        language = getConfig().getString("lang");
     }
 
     public void save() {
@@ -221,13 +224,13 @@ public final class NexusAuctionHouse extends JavaPlugin implements NexusPlugin, 
         if (config.getBoolean("save-notif")) Util.staffBc(prefix()+ChatColor.GOLD+Lang.translate("dataSave", this, time+""));
     }
 
-    BukkitRunnable periodicSave = new BukkitRunnable() {
+    final BukkitRunnable periodicSave = new BukkitRunnable() {
         @Override
         public void run() {
             save();
         }
     };
-    BukkitRunnable purgeLogs = new BukkitRunnable() {
+    final BukkitRunnable purgeLogs = new BukkitRunnable() {
         @Override
         public void run() {
             int time = Math.toIntExact(System.currentTimeMillis()/1000);
@@ -255,7 +258,7 @@ public final class NexusAuctionHouse extends JavaPlugin implements NexusPlugin, 
 
     @Override
     public String ver() {
-        return "2.4.3";
+        return "2.4.4";
     }
 
     @Override
@@ -275,6 +278,6 @@ public final class NexusAuctionHouse extends JavaPlugin implements NexusPlugin, 
 
     @Override
     public Map<String, String> langMap() {
-        return langMap;
+        return localLangMap;
     }
 }

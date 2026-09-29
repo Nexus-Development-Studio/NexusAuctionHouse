@@ -14,7 +14,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,27 +33,21 @@ public class ContentsGui {
         if (page > 1) {
             gui.setItem(6, 4, ItemBuilder.from(Material.ARROW)
                     .name(LegacyComponentSerializer.legacyAmpersand().deserialize(Lang.translate("prevPage", core)))
-                    .asGuiItem(event -> gui(sort, page-1, search).open((Player) event.getWhoClicked())));
+                    .asGuiItem(event -> gui(sort, page-1, search).open(event.getWhoClicked())));
         }
 
         if (page < max) {
             gui.setItem(6, 6, ItemBuilder.from(Material.ARROW)
                     .name(LegacyComponentSerializer.legacyAmpersand().deserialize(Lang.translate("nextPage", core)))
-                    .asGuiItem(event -> gui(sort, page+1, search).open((Player) event.getWhoClicked())));
+                    .asGuiItem(event -> gui(sort, page+1, search).open(event.getWhoClicked())));
         }
 
         gui.setItem(6, 5, ItemBuilder.from(Material.BARRIER)
                 .name(LegacyComponentSerializer.legacyAmpersand().deserialize(Lang.translate("back", core)))
-                .asGuiItem(event -> new EditSortGui().gui(sort).open((Player) event.getWhoClicked())));
+                .asGuiItem(event -> new EditSortGui().gui(sort).open(event.getWhoClicked())));
 
-        List<Component> lore = new ArrayList<>();
-        if (search != null) {
-            lore.add(LegacyComponentSerializer.legacyAmpersand().deserialize(""));
-            lore.add(LegacyComponentSerializer.legacyAmpersand().deserialize("  "+Lang.translate("currSearch", core, search)));
-            lore.add(LegacyComponentSerializer.legacyAmpersand().deserialize("  "+Lang.translate("searchReset", core)));
-        }
-        lore.add(LegacyComponentSerializer.legacyAmpersand().deserialize(""));
-        lore.add(LegacyComponentSerializer.legacyAmpersand().deserialize(Lang.translate("clickSearch", core)));
+
+        List<Component> lore = searchItemLore(search, core);
         gui.setItem(6, 2, ItemBuilder.from(Material.OAK_SIGN)
                 .name(LegacyComponentSerializer.legacyAmpersand().deserialize(Util.color("&r&e"+Lang.translate("search", core))))
                 .flags(ItemFlag.HIDE_ATTRIBUTES)
@@ -70,12 +63,8 @@ public class ContentsGui {
                     AnvilGUI.Builder anvil = new AnvilGUI.Builder();
                     anvil.plugin(core);
                     anvil.itemLeft(new ItemStack(Material.PAPER));
-
-                    ItemStack out = new ItemStack(Material.PAPER);
-                    ItemMeta meta = out.getItemMeta();
-                    meta.setDisplayName(ChatColor.GOLD+Lang.translate("search", core));
-                    out.setItemMeta(meta);
-                    anvil.itemOutput(out);
+                    anvil.itemOutput(ItemBuilder.from(Material.PAPER)
+                            .name(Component.text(ChatColor.GOLD+Lang.translate("search", core))).build());
 
                     anvil.text(Lang.translate("enterSearch", core));
                     anvil.onClick((integer, stateSnapshot) -> {
@@ -112,12 +101,24 @@ public class ContentsGui {
                             } else {
                                 sort.getContents().add(m);
                             }
-                            gui(sort, page, search).open((Player) event.getWhoClicked());
+                            gui(sort, page, search).open(event.getWhoClicked());
                         }));
-            } catch (IllegalArgumentException e) {
-                continue;
+            } catch (IllegalArgumentException _) {
+                // Ignore invalid materials
             }
         }
         return gui;
+    }
+
+    public static List<Component> searchItemLore(String search, NexusAuctionHouse core) {
+        List<Component> lore = new ArrayList<>();
+        if (search != null) {
+            lore.add(LegacyComponentSerializer.legacyAmpersand().deserialize(""));
+            lore.add(LegacyComponentSerializer.legacyAmpersand().deserialize("  "+ Lang.translate("currSearch", core, search)));
+            lore.add(LegacyComponentSerializer.legacyAmpersand().deserialize("  "+Lang.translate("searchReset", core)));
+        }
+        lore.add(LegacyComponentSerializer.legacyAmpersand().deserialize(""));
+        lore.add(LegacyComponentSerializer.legacyAmpersand().deserialize(Lang.translate("clickSearch", core)));
+        return lore;
     }
 }

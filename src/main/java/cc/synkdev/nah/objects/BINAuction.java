@@ -24,7 +24,7 @@ public class BINAuction {
         this.price = price;
         this.expiry = expiry;
 
-        assert buyer != null;
+        if (buyer == null) buyer = "";
         if (!buyer.equalsIgnoreCase("")) this.buyer = UUID.fromString(buyer);
     }
 

@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Date;
 
+@SuppressWarnings({"unused", "NullableProblems", "LombokGetterMayBeUsed", "LombokSetterMayBeUsed"})
 @Getter @Setter
 public class ItemListEvent extends Event implements Cancellable {
     private static final HandlerList HANDLERS = new HandlerList();

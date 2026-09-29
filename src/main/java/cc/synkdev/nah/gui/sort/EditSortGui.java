@@ -69,7 +69,7 @@ public class EditSortGui {
                         p.sendMessage(core.prefix()+Lang.translate("noPerm", core));
                         return;
                     }
-                    new IconPickerGui().gui(sort, 1, null).open((Player) event.getWhoClicked());
+                    new IconPickerGui().gui(sort, 1, null).open(event.getWhoClicked());
                 }));
 
         gui.setItem(3, 6, ItemBuilder.from(Material.CHEST)
@@ -101,7 +101,7 @@ public class EditSortGui {
 
         gui.setItem(5, 5, ItemBuilder.from(Material.BARRIER)
                 .name(LegacyComponentSerializer.legacyAmpersand().deserialize(Lang.translate("back", core)))
-                .asGuiItem(event -> new SortsManagementGui().gui(1).open((Player) event.getWhoClicked())));
+                .asGuiItem(event -> new SortsManagementGui().gui(1).open(event.getWhoClicked())));
         return gui;
     }
 }

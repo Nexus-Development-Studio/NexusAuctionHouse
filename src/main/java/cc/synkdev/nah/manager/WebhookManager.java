@@ -19,12 +19,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class WebhookManager {
+    private WebhookManager() {
+        /* This utility class should not be instantiated */
+    }
+
     private static final NexusAuctionHouse core = NexusAuctionHouse.getInstance();
-    private static File file = new File(core.getDataFolder(), "webhook.yml");
+    private static final File file = new File(core.getDataFolder(), "webhook.yml");
     private static Boolean status = false;
     private static String url = null;
     private static FileConfiguration config;
-    private static Map<String, Boolean> alerts = new HashMap<>();
+    private static final Map<String, Boolean> alerts = new HashMap<>();
     public static void read() {
         if (file.exists()) {
             config = YamlConfiguration.loadConfiguration(file);
@@ -39,6 +43,7 @@ public class WebhookManager {
             alerts.put("ah-toggle", config.getBoolean("alerts.ah-toggle"));
         } else {
             try {
+                assert core.getResource("webhook.yml") != null;
                 Files.copy(core.getResource("webhook.yml"), file.toPath());
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -63,20 +68,19 @@ public class WebhookManager {
         DiscordWebhook wh = new DiscordWebhook(url);
         wh.setUsername("NexusAuctionHouse");
         wh.setAvatarUrl("https://synkdev.cc/img/nah.png");
-        String desc = Util.sanitizeDiscordMsg(Util.addPlaceholders(config.getString("webhook-descriptions."+key), args)+"\n"+(!key.equals("ah-toggle") ? bA.getItem().getAmount()+"x "+(bA.getItem().getItemMeta().getDisplayName().isEmpty() ? bA.getItem().getType().name() : sanitizeColors(bA.getItem().getItemMeta().getDisplayName())) : ""));
+        String name = bA.getItem().getItemMeta().getDisplayName().isEmpty() ? bA.getItem().getType().name() : sanitizeColors(bA.getItem().getItemMeta().getDisplayName());
+        String desc = Util.sanitizeDiscordMsg(Util.addPlaceholders(config.getString("webhook-descriptions."+key), args)+"\n"+(!key.equals("ah-toggle") ? bA.getItem().getAmount()+"x "+(name) : ""));
         DiscordWebhook.EmbedObject embed = new DiscordWebhook.EmbedObject().setTitle(config.getString("webhook-titles."+key)).setDescription(desc);
         if (!key.equals("ah-toggle")) {
             embed.setThumbnail("https://raw.githubusercontent.com/Mojang/bedrock-samples/refs/heads/main/resource_pack/textures/items/"+bA.getItem().getType().getKey().getKey().toLowerCase()+".png");
         }
-        if (bA != null) {
-            embed.addField("Price", "$"+bA.getPrice(), true);
-            ZonedDateTime dateTime = Instant.ofEpochSecond(bA.getExpiry())
-                    .atZone(ZoneId.systemDefault());
+        embed.addField("Price", "$"+bA.getPrice(), true);
+        ZonedDateTime dateTime = Instant.ofEpochSecond(bA.getExpiry())
+                .atZone(ZoneId.systemDefault());
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(core.getDateFormat());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(core.getDateFormat());
 
-            embed.addField("Expiry", dateTime.format(formatter), true);
-        }
+        embed.addField("Expiry", dateTime.format(formatter), true);
         wh.addEmbed(embed);
         try {
             wh.execute();

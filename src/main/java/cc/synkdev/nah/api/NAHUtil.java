@@ -25,6 +25,10 @@ import java.util.concurrent.atomic.AtomicReference;
  * Main class used by the Developer API
  */
 public class NAHUtil {
+    private NAHUtil() {
+        /* This utility class should not be instantiated */
+    }
+
     private static final NexusAuctionHouse core = NexusAuctionHouse.getInstance();
 
     /**
@@ -85,7 +89,7 @@ public class NAHUtil {
     public static Long reload() {
         long time = System.currentTimeMillis();
         core.save();
-        NexusUtils.initLang(core, core.langMap, core.lang);
+        NexusUtils.initLang(core, core.localLangMap, core.language);
         core.reloadConfig();
         ItemSortsManager.read();
         WebhookManager.read();
@@ -246,6 +250,7 @@ public class NAHUtil {
                 try {
                     slots = Integer.parseInt(s.replace("nah.slots.", ""));
                 } catch (NumberFormatException _) {
+                    // Skip invalid numbers
                 }
             }
         }

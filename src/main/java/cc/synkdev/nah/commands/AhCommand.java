@@ -56,7 +56,7 @@ public class AhCommand extends BaseCommand {
             p.sendMessage(core.prefix() + ChatColor.RED + Lang.translate("sellUsage", core));
             return;
         }
-        if (p.getInventory().getItemInMainHand() == null || p.getInventory().getItemInMainHand().getType() == Material.AIR || p.getInventory().getItemInMainHand().getAmount() == 0) {
+        if (p.getInventory().getItemInMainHand().getType() == Material.AIR || p.getInventory().getItemInMainHand().getAmount() == 0) {
             p.sendMessage(core.prefix() + ChatColor.RED + Lang.translate("emptyHand", core));
             return;
         }
@@ -74,7 +74,7 @@ public class AhCommand extends BaseCommand {
         long price;
         try {
             price = Long.parseLong(args[0]);
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException _) {
             p.sendMessage(core.prefix() + ChatColor.RED + Lang.translate("invalidNumber", core));
             return;
         }
@@ -111,7 +111,7 @@ public class AhCommand extends BaseCommand {
         int id;
         try {
             id = Integer.parseInt(args[0]);
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException _) {
             sender.sendMessage(core.prefix()+ChatColor.RED+Lang.translate("invalidNumber", core));
             return;
         }
@@ -124,7 +124,7 @@ public class AhCommand extends BaseCommand {
         int price;
         try {
             price = Integer.parseInt(args[1]);
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException _) {
             sender.sendMessage(core.prefix()+ChatColor.RED+Lang.translate("invalidNumber", core));
             return;
         }
@@ -140,7 +140,7 @@ public class AhCommand extends BaseCommand {
     @Subcommand("ban")
     @CommandPermission("nah.command.ban")
     public void onBan(Player p) {
-        if (p.getInventory().getItemInMainHand() == null) {
+        if (p.getInventory().getItemInMainHand().getType() == Material.AIR) {
             p.sendMessage(core.prefix()+ChatColor.RED+"Couldn't ban the item in your hand since it is empty!");
             return;
         }
@@ -153,7 +153,7 @@ public class AhCommand extends BaseCommand {
     @Subcommand("unban")
     @CommandPermission("nah.command.ban")
     public void onUnban(Player p) {
-        if (p.getInventory().getItemInMainHand() == null) {
+        if (p.getInventory().getItemInMainHand().getType() == Material.AIR) {
             p.sendMessage(core.prefix()+ChatColor.RED+"Couldn't unban the item in your hand since it is empty!");
             return;
         }
@@ -190,7 +190,7 @@ public class AhCommand extends BaseCommand {
         }
 
         OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
-        if (target == null || (!target.hasPlayedBefore() && !target.isOnline())) {
+        if (!target.hasPlayedBefore() && !target.isOnline()) {
             p.sendMessage(core.prefix()+ChatColor.RED+Lang.translate("playerNull", core, args[0]));
             return;
         }

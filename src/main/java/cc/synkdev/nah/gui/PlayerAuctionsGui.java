@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class PlayerAuctionsGui {
-    NexusAuctionHouse core = NexusAuctionHouse.getInstance();
+    private final NexusAuctionHouse core = NexusAuctionHouse.getInstance();
     int page;
     int max;
     MainGuiSnapshot snapshot;
@@ -52,10 +52,8 @@ public class PlayerAuctionsGui {
 
         if (snapshot != null) {
             gui.setItem(6, 5, ItemBuilder.from(Material.BARRIER)
-                    .name(snapshot == null ? LegacyComponentSerializer.legacyAmpersand().deserialize(ChatColor.RED + Lang.translate("close", core)) : LegacyComponentSerializer.legacyAmpersand().deserialize(ChatColor.RED + Lang.translate("back", core)))
-                    .asGuiItem(event -> {
-                        new MainGui().gui(p, snapshot.getPage(), snapshot.getSearch(), snapshot.getFirstSort(), snapshot.getItSort()).open(p);
-                    }));
+                    .name(LegacyComponentSerializer.legacyAmpersand().deserialize(ChatColor.RED + Lang.translate("back", core)))
+                    .asGuiItem(_ -> new MainGui().gui(p, snapshot.getPage(), snapshot.getSearch(), snapshot.getFirstSort(), snapshot.getItSort()).open(p)));
         }
         return gui;
     }

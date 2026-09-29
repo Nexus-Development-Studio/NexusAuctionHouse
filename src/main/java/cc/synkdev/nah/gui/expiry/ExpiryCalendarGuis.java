@@ -1,5 +1,6 @@
 package cc.synkdev.nah.gui.expiry;
 
+import cc.synkdev.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import cc.synkdev.nah.NexusAuctionHouse;
 import cc.synkdev.nah.api.NAHUtil;
 import cc.synkdev.nah.gui.ManageMenu;
@@ -7,9 +8,7 @@ import cc.synkdev.nah.objects.BINAuction;
 import cc.synkdev.nexusCore.bukkit.Lang;
 import cc.synkdev.triumph.builder.item.ItemBuilder;
 import cc.synkdev.triumph.guis.Gui;
-import cc.synkdev.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
-import cc.synkdev.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -21,9 +20,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ExpiryCalendarGuis {
-    NexusAuctionHouse core = NexusAuctionHouse.getInstance();
-    Player p;
-    BINAuction bA;
+    private final NexusAuctionHouse core = NexusAuctionHouse.getInstance();
+    private final Player p;
+    private final BINAuction bA;
     int year;
     int month;
     int day;
@@ -47,7 +46,7 @@ public class ExpiryCalendarGuis {
             int year = Calendar.getInstance().get(Calendar.YEAR)+i-4;
             gui.setItem(1, (i+1), ItemBuilder.from(Material.RED_TERRACOTTA)
                     .name(LegacyComponentSerializer.legacyAmpersand().deserialize(ChatColor.YELLOW+""+year))
-                    .asGuiItem(event -> {
+                    .asGuiItem(_ -> {
                         this.year = year;
                         monthGui().open(p);
                     }));
@@ -80,7 +79,7 @@ public class ExpiryCalendarGuis {
         for (Map.Entry<Integer, Integer> entry : slotsMap.entrySet()) {
             gui.setItem(entry.getKey(), ItemBuilder.from(Material.ORANGE_TERRACOTTA)
                     .name(LegacyComponentSerializer.legacyAmpersand().deserialize(ChatColor.YELLOW+""+(entry.getValue()+1)))
-                    .asGuiItem(event -> {
+                    .asGuiItem(_ -> {
                         this.month = entry.getValue()+1;
                         dayGui().open(p);
                     }));
@@ -95,16 +94,17 @@ public class ExpiryCalendarGuis {
                 .rows(4)
                 .create();
 
-        int days = 30;
+        int days;
         switch (month) {
             case 1,3,5,7,8,10,12 -> days = 31;
             case 2 -> days = LocalDate.parse(year+"-"+month+"-"+"01").isLeapYear() ? 29 : 28;
+            default -> days = 30;
         }
         for (int i = 0; i < days; i++) {
             int day = i+1;
             gui.setItem(i, ItemBuilder.from(Material.YELLOW_TERRACOTTA)
                     .name(LegacyComponentSerializer.legacyAmpersand().deserialize(ChatColor.YELLOW+""+(i+1)))
-                    .asGuiItem(event -> {
+                    .asGuiItem(_ -> {
                         this.day = day;
                         hourGui().open(p);
                     }));
@@ -161,7 +161,7 @@ public class ExpiryCalendarGuis {
         for (Map.Entry<Integer, Integer> entry : amMap.entrySet()) {
             gui.setItem(entry.getValue(), ItemBuilder.from(Material.LIME_TERRACOTTA)
                     .name(LegacyComponentSerializer.legacyAmpersand().deserialize(ChatColor.YELLOW+""+entry.getKey()))
-                    .asGuiItem(event -> {
+                    .asGuiItem(_ -> {
                         this.hour = entry.getKey();
                         tenthMinuteGui().open(p);
                     }));
@@ -170,13 +170,13 @@ public class ExpiryCalendarGuis {
         for (Map.Entry<Integer, Integer> entry : pmMap.entrySet()) {
             gui.setItem(entry.getValue(), ItemBuilder.from(Material.LIME_TERRACOTTA)
                     .name(LegacyComponentSerializer.legacyAmpersand().deserialize(ChatColor.YELLOW+""+entry.getKey()))
-                    .asGuiItem(event -> {
+                    .asGuiItem(_ -> {
                         this.hour = entry.getKey()+12;
                         tenthMinuteGui().open(p);
                     }));
         }
         return gui;
-    };
+    }
 
     public Gui tenthMinuteGui() {
         Gui gui = Gui.gui()
@@ -189,7 +189,7 @@ public class ExpiryCalendarGuis {
             int minute = i;
             gui.setItem((i > 2 ? i+2 : i+1), ItemBuilder.from(Material.GREEN_TERRACOTTA)
                     .name(LegacyComponentSerializer.legacyAmpersand().deserialize(ChatColor.YELLOW+""+minute+"X"))
-                    .asGuiItem(event -> {
+                    .asGuiItem(_ -> {
                         this.min = minute*10;
                         minuteGui().open(p);
                     }));
@@ -218,8 +218,8 @@ public class ExpiryCalendarGuis {
             for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
                 int minute = entry.getKey();
                 gui.setItem(entry.getValue(), ItemBuilder.from(Material.GREEN_TERRACOTTA)
-                        .name(LegacyComponentSerializer.legacyAmpersand().deserialize(ChatColor.YELLOW+""+(this.min/10)+""+minute))
-                        .asGuiItem(event -> {
+                        .name(LegacyComponentSerializer.legacyAmpersand().deserialize(ChatColor.YELLOW+""+(this.min/10)+minute))
+                        .asGuiItem(_ -> {
                             this.min = this.min+minute;
                             LocalDateTime ldt = LocalDateTime.of(year, month, day, hour, min);
                             NAHUtil.setExpiry(this.bA, Math.toIntExact(ldt.toEpochSecond(ZoneOffset.UTC)), p.getDisplayName());

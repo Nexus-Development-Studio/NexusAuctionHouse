@@ -26,6 +26,10 @@ import java.util.regex.Pattern;
 
 @SuppressWarnings("ALL")
 public class Util {
+    private Util() {
+        /* This utility class should not be instantiated */
+    }
+
     private static final NexusAuctionHouse core = NexusAuctionHouse.getInstance();
     public static String serializeItemstack(ItemStack item) {
         try {
@@ -115,15 +119,12 @@ public class Util {
     public static List<BINAuction> searchList(String message, SortingTypes sort) {
         List<BINAuction> list = new ArrayList<>();
         for(BINAuction binAuction : core.runningBINs) {
-            if (binAuction.getItem().getItemMeta().getDisplayName().toLowerCase().contains(message.toLowerCase())) {
-                if (list.contains(binAuction)) list.add(binAuction);
-            }
-            if (Util.getName(binAuction.getSeller()).toLowerCase().contains(message.toLowerCase())) {
-                if (!list.contains(binAuction)) list.add(binAuction);
-            }
-            if (binAuction.getItem().getType().name().toLowerCase().contains(message.toLowerCase())) {
-                if (!list.contains(binAuction)) list.add(binAuction);
-            }
+            if (binAuction.getItem().getItemMeta().getDisplayName().toLowerCase().contains(message.toLowerCase()) && list.contains(binAuction)) list.add(binAuction);
+
+            if (Util.getName(binAuction.getSeller()).toLowerCase().contains(message.toLowerCase()) && !list.contains(binAuction)) list.add(binAuction);
+
+            if (binAuction.getItem().getType().name().toLowerCase().contains(message.toLowerCase()) && !list.contains(binAuction)) list.add(binAuction);
+
         }
         switch (sort) {
             case PRICEMIN:
@@ -177,6 +178,7 @@ public class Util {
         return Bukkit.getOfflinePlayer(u).getName();
     }
     public static long parseDurationToSeconds(String input) {
+        if (input == null) return 0L;
         Map<String, Long> timeUnits = Map.of(
                 "s", 1L,
                 "m", 60L,
@@ -262,5 +264,9 @@ public class Util {
 
     public static String color(String s) {
         return ChatColor.translateAlternateColorCodes('&', s);
+    }
+
+    public static String translate(String key, String... placeholders) {
+        return Lang.translate(key, NexusAuctionHouse.getInstance(), placeholders);
     }
 }

@@ -1,5 +1,6 @@
 package cc.synkdev.nah.gui;
 
+import cc.synkdev.kyori.adventure.text.Component;
 import cc.synkdev.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import cc.synkdev.nah.NexusAuctionHouse;
 import cc.synkdev.nah.api.NAHUtil;
@@ -15,16 +16,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ConfirmBuyGui {
-    NexusAuctionHouse core = NexusAuctionHouse.getInstance();
+    private final NexusAuctionHouse core = NexusAuctionHouse.getInstance();
     public Gui gui(BINAuction bA) {
         Gui gui = Gui.gui().rows(4)
                 .title(LegacyComponentSerializer.legacyAmpersand().deserialize(ChatColor.YELLOW+ Lang.translate("confirmBuy", core)))
@@ -43,13 +41,12 @@ public class ConfirmBuyGui {
     }
     GuiItem confirm(BINAuction bAa) {
         double tax = Math.round(bAa.getPrice()*((double) core.getBuyTaxPercent()/100));
-        ItemStack item = new ItemStack(Material.GREEN_WOOL);
-        ItemMeta meta = item.getItemMeta();
-        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        meta.setDisplayName(Util.color("&r&c&l"+Lang.translate("confirm", core)));
-        if (core.getBuyTaxPercent() > 0) meta.setLore(new ArrayList<>(Arrays.asList("", Util.color("&r&e&l"+Lang.translate("taxes", core, core.getBuyTaxPercent()+"", tax+"")))));
-        item.setItemMeta(meta);
-        return ItemBuilder.from(item).asGuiItem(event -> {
+        List<Component> lore = new ArrayList<>();
+        if (core.getBuyTaxPercent() > 0) lore.add(Component.text(Util.color("&r&e&l"+Lang.translate("taxes", core, core.getBuyTaxPercent()+"", tax+""))));
+        return ItemBuilder.from(Material.GREEN_WOOL)
+                .name(Component.text(Util.color("&r&c&l"+Util.translate("confirm"))))
+                .lore(lore)
+                .asGuiItem(event -> {
             Player pl = (Player) event.getWhoClicked();
             BINAuction bA = NAHUtil.getAuction(bAa.getId());
             if (!bA.getBuyable()) {
@@ -78,7 +75,7 @@ public class ConfirmBuyGui {
                     DataFileManager.sort();
                     pl.closeInventory();
                     WebhookManager.sendWebhook("listing-bought", bA, pl.getName(), Util.getName(bA.getSeller()), bA.getPrice()+"");
-                    core.money = core.money+Math.toIntExact(bA.getPrice());
+                    core.money = core.money+bA.getPrice();
                     pl.sendMessage(core.prefix() + ChatColor.GREEN + Lang.translate("successBuy", core, Util.getName(bA.getSeller()), bA.getPrice()+""));
                 } else {
                     pl.sendMessage(core.prefix()+ChatColor.RED+Lang.translate("notEnoughBuy", core));
@@ -90,12 +87,8 @@ public class ConfirmBuyGui {
         });
     }
     GuiItem cancel() {
-        ItemStack item = new ItemStack(Material.BARRIER);
-        ItemMeta meta = item.getItemMeta();
-        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        meta.setDisplayName(Util.color("&r&c&l"+Lang.translate("cancel", core)));
-        item.setItemMeta(meta);
-        return ItemBuilder.from(item).asGuiItem(event -> {
+        return ItemBuilder.from(Material.BARRIER)
+                .name(Component.text(Util.color("&r&c&l"+Util.translate("cancel")))).asGuiItem(event -> {
             Player pl = (Player) event.getWhoClicked();
             pl.closeInventory();
             NAHUtil.open(pl, false, null, 1);

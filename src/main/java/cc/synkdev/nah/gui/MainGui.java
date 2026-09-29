@@ -1,7 +1,10 @@
 package cc.synkdev.nah.gui;
 
+import cc.synkdev.kyori.adventure.text.Component;
+import cc.synkdev.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import cc.synkdev.nah.NexusAuctionHouse;
 import cc.synkdev.nah.api.NAHUtil;
+import cc.synkdev.nah.gui.sort.ContentsGui;
 import cc.synkdev.nah.manager.Util;
 import cc.synkdev.nah.objects.BINAuction;
 import cc.synkdev.nah.objects.ItemSort;
@@ -11,36 +14,29 @@ import cc.synkdev.triumph.builder.item.ItemBuilder;
 import cc.synkdev.triumph.components.util.GuiFiller;
 import cc.synkdev.triumph.guis.Gui;
 import cc.synkdev.triumph.guis.GuiItem;
-import cc.synkdev.kyori.adventure.text.Component;
-import cc.synkdev.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class MainGui {
-    NexusAuctionHouse core = NexusAuctionHouse.getInstance();
-    int max = (core.runningBINs.size()+39)/40;
+    private final NexusAuctionHouse core = NexusAuctionHouse.getInstance();
+    private final int max = (core.runningBINs.size()+39)/40;
     int page;
     String searchS;
-    int firstSort;
     ItemSort itSort;
     Player p;
-    MainGuiSnapshot snapshot;
     public Gui gui(Player p, int page, String search, int firstSort, ItemSort itSort) {
-        snapshot = new MainGuiSnapshot(page, search, firstSort, itSort);
         this.p = p;
         core.checkExpiry.run();
         this.page = page;
         this.searchS = search;
-        this.firstSort = firstSort;
         this.itSort = itSort;
         SortingTypes sort = core.playerSortingTypes.getOrDefault(p.getUniqueId(), SortingTypes.PRICEMIN);
         Gui gui = Gui.gui()
@@ -60,12 +56,12 @@ public class MainGui {
         gui.setItem(6, 8, sorter(p, page, search));
 
         if (firstSort > 0) {
-            gui.setItem(1, 1, ItemBuilder.from(Material.ARROW).name(LegacyComponentSerializer.legacyAmpersand().deserialize(Lang.translate("sorts", core))).lore(Component.empty(), LegacyComponentSerializer.legacyAmpersand().deserialize(Lang.translate("scrollSorts", core))).asGuiItem(event -> gui(p, page, search, firstSort-1, itSort).open(p)));
+            gui.setItem(1, 1, ItemBuilder.from(Material.ARROW).name(LegacyComponentSerializer.legacyAmpersand().deserialize(Lang.translate("sorts", core))).lore(Component.empty(), LegacyComponentSerializer.legacyAmpersand().deserialize(Lang.translate("scrollSorts", core))).asGuiItem(_ -> gui(p, page, search, firstSort-1, itSort).open(p)));
         }
 
         boolean useFirst = firstSort<=0;
         if (core.itemSorts.size() > 5 && core.itemSorts.size() >= firstSort+6) {
-            gui.setItem(6, 1, ItemBuilder.from(Material.ARROW).name(LegacyComponentSerializer.legacyAmpersand().deserialize(Lang.translate("sorts", core))).lore(Component.empty(), LegacyComponentSerializer.legacyAmpersand().deserialize(Lang.translate("scrollSorts", core))).asGuiItem(event -> gui(p, page, search, firstSort+1, itSort).open(p)));
+            gui.setItem(6, 1, ItemBuilder.from(Material.ARROW).name(LegacyComponentSerializer.legacyAmpersand().deserialize(Lang.translate("sorts", core))).lore(Component.empty(), LegacyComponentSerializer.legacyAmpersand().deserialize(Lang.translate("scrollSorts", core))).asGuiItem(_ -> gui(p, page, search, firstSort+1, itSort).open(p)));
         }
         int index = firstSort;
         for (int i = useFirst ? 1 : 2; i < 6; i++) {
@@ -73,7 +69,7 @@ public class MainGui {
 
             ItemSort iSort = core.itemSorts.entrySet().stream().toList().get(index).getValue();
             boolean same = iSort == itSort;
-            gui.setItem(i, 1, ItemBuilder.from(iSort.getIcon()).glow(same).flags(ItemFlag.HIDE_ATTRIBUTES).name(LegacyComponentSerializer.legacyAmpersand().deserialize(ChatColor.YELLOW+iSort.getName())).lore(Component.empty(), LegacyComponentSerializer.legacyAmpersand().deserialize(Lang.translate((same ? "clickUnsort" : "clickSort"), core))).asGuiItem(event -> {
+            gui.setItem(i, 1, ItemBuilder.from(iSort.getIcon()).glow(same).flags(ItemFlag.HIDE_ATTRIBUTES).name(LegacyComponentSerializer.legacyAmpersand().deserialize(ChatColor.YELLOW+iSort.getName())).lore(Component.empty(), LegacyComponentSerializer.legacyAmpersand().deserialize(Lang.translate((same ? "clickUnsort" : "clickSort"), core))).asGuiItem(_ -> {
                 if (same) {
                     gui(p, page, search, firstSort, null).open(p);
                 } else {
@@ -96,9 +92,7 @@ public class MainGui {
         gui.setItem(6, 9, ItemBuilder.from(Material.CHEST)
                 .name(LegacyComponentSerializer.legacyAmpersand().deserialize(ChatColor.GOLD+Lang.translate("titleRetrieve", core)))
                         .lore(LegacyComponentSerializer.legacyAmpersand().deserialize(""), LegacyComponentSerializer.legacyAmpersand().deserialize("  "+Lang.translate("retrieveCount", core, core.retrieveMap.getOrDefault(p.getUniqueId(), new ArrayList<>()).size()+"")), LegacyComponentSerializer.legacyAmpersand().deserialize(""), LegacyComponentSerializer.legacyAmpersand().deserialize(Lang.translate("clickBrowse", core)))
-                .asGuiItem(event -> {
-                    NAHUtil.openExpiredGui(p);
-                }));
+                .asGuiItem(_ -> NAHUtil.openExpiredGui(p)));
         if (p.hasPermission("nah.menu.player.own")) {
                 gui.setItem(6, 5, ItemBuilder.skull().owner(p)
                         .name(LegacyComponentSerializer.legacyAmpersand().deserialize(Lang.translate("viewOwn", core)))
@@ -285,18 +279,10 @@ public class MainGui {
                 });
     }
     GuiItem search() {
-        List<Component> lore = new ArrayList<>();
-        if (searchS != null) {
-            lore.add(LegacyComponentSerializer.legacyAmpersand().deserialize(""));
-            lore.add(LegacyComponentSerializer.legacyAmpersand().deserialize("  "+Lang.translate("currSearch", core, searchS)));
-            lore.add(LegacyComponentSerializer.legacyAmpersand().deserialize("  "+Lang.translate("searchReset", core)));
-        }
-        lore.add(LegacyComponentSerializer.legacyAmpersand().deserialize(""));
-        lore.add(LegacyComponentSerializer.legacyAmpersand().deserialize(Lang.translate("clickSearch", core)));
         return ItemBuilder.from(Material.OAK_SIGN)
                 .name(LegacyComponentSerializer.legacyAmpersand().deserialize(Util.color("&r&e"+Lang.translate("search", core))))
                 .flags(ItemFlag.HIDE_ATTRIBUTES)
-                .lore(lore)
+                .lore(ContentsGui.searchItemLore(searchS, core))
                 .asGuiItem(event -> {
                     Player p = (Player) event.getWhoClicked();
                     if (event.isRightClick() && searchS != null) {
@@ -308,12 +294,8 @@ public class MainGui {
                     AnvilGUI.Builder anvil = new AnvilGUI.Builder();
                     anvil.plugin(core);
                     anvil.itemLeft(new ItemStack(Material.PAPER));
-
-                    ItemStack out = new ItemStack(Material.PAPER);
-                    ItemMeta meta = out.getItemMeta();
-                    meta.setDisplayName(ChatColor.GOLD+Lang.translate("search", core));
-                    out.setItemMeta(meta);
-                    anvil.itemOutput(out);
+                    anvil.itemOutput(ItemBuilder.from(Material.PAPER)
+                            .name(Component.text(ChatColor.GOLD+Lang.translate("search", core))).build());
 
                     anvil.text(Lang.translate("enterSearch", core));
                     anvil.onClick((integer, stateSnapshot) -> {
