@@ -172,6 +172,7 @@ public class ExpiryCalendarGuis {
                     .name(LegacyComponentSerializer.legacyAmpersand().deserialize(ChatColor.YELLOW+""+entry.getKey()))
                     .asGuiItem(_ -> {
                         this.hour = entry.getKey()+12;
+                        if (this.hour == 24) this.hour = 0;
                         tenthMinuteGui().open(p);
                     }));
         }

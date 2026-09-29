@@ -200,6 +200,16 @@ public class MainGui {
                     boolean shift = event.isShiftClick();
                     boolean rss = right&&shift&&shulker;
 
+                    if (rss) {
+                        Gui gui = new ConfirmBuyGui().gui(bAa);
+                        if (gui != null) {
+                            gui.open(p);
+                        } else {
+                            p.sendMessage(core.prefix()+Util.translate("shulkerError"));
+                        }
+                        return;
+                    }
+
                     if (event.isShiftClick() && p.hasPermission("nah.menu.manage")) {
                         Gui gui = new ManageMenu().gui(bAa);
                         gui.open(p);
@@ -208,11 +218,6 @@ public class MainGui {
                     if (!bAa.getBuyable()) {
                         p.sendMessage(core.prefix()+Lang.translate("already-bought", core));
                         NAHUtil.open(p, false, searchS, page);
-                        return;
-                    }
-
-                    if (rss) {
-                        new ShulkerViewerGui().gui(bAa).open(p);
                         return;
                     }
 

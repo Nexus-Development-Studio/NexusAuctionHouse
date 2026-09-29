@@ -1,14 +1,16 @@
 package cc.synkdev.nah.manager;
 
+import cc.synkdev.json.JSONArray;
+import cc.synkdev.json.JSONObject;
 import cc.synkdev.nah.NexusAuctionHouse;
 import cc.synkdev.nah.objects.ItemSort;
 import org.bukkit.Material;
-import cc.synkdev.json.JSONArray;
-import cc.synkdev.json.JSONObject;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,7 +55,6 @@ public class ItemSortsManager {
     }
 
     public static void save() {
-        File temp = new File(file.getParentFile(), "temp-" + System.currentTimeMillis() + ".json");
         JSONArray arr = new JSONArray();
         for (ItemSort sort : core.itemSorts.values()) {
             arr.put(sort.export());
@@ -61,17 +62,8 @@ public class ItemSortsManager {
         JSONObject obj = new JSONObject();
         obj.put("sorts", arr);
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(temp));
-            writer.write(obj.toString(2));
-            writer.newLine();
-            writer.close();
 
-            Files.move(
-                    temp.toPath(),
-                    file.toPath(),
-                    StandardCopyOption.REPLACE_EXISTING,
-                    StandardCopyOption.ATOMIC_MOVE
-            );
+            Files.writeString(file.toPath(), obj.toString(2));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -15,8 +15,10 @@ public class ShulkerViewerGui {
     private final NexusAuctionHouse core = NexusAuctionHouse.getInstance();
     public Gui gui(BINAuction bA) {
         ItemStack item = bA.getItem();
-        if (!item.getType().name().contains("SHULKER_BOX")) return null;
-        Gui gui = Gui.gui().rows(4).title(LegacyComponentSerializer.legacyAmpersand().deserialize(Lang.translate("shulkerViewer", core))).disableAllInteractions().create();
+        if (!item.getType().name().endsWith("SHULKER_BOX")) return null;
+        Gui gui = Gui.gui()
+                .rows(4)
+                .title(LegacyComponentSerializer.legacyAmpersand().deserialize(Lang.translate("inventoryViewer", core))).disableAllInteractions().create();
         try {
             BlockStateMeta meta = (BlockStateMeta) item.getItemMeta();
             assert meta != null;
