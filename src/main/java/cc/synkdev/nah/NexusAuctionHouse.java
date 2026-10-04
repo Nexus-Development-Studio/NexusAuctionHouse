@@ -11,9 +11,9 @@ import cc.synkdev.nah.manager.*;
 import cc.synkdev.nah.objects.BINAuction;
 import cc.synkdev.nah.objects.ItemSort;
 import cc.synkdev.nah.objects.SortingTypes;
-import cc.synkdev.nexusCore.bukkit.Lang;
-import cc.synkdev.nexusCore.bukkit.NexusUtils;
-import cc.synkdev.nexusCore.components.NexusPlugin;
+import cc.synkdev.nexuscore.bukkit.Lang;
+import cc.synkdev.nexuscore.bukkit.NexusUtils;
+import cc.synkdev.nexuscore.components.NexusPlugin;
 import cc.synkdev.acf.BukkitCommandManager;
 import cc.synkdev.acf.MessageKeys;
 import lombok.Getter;
@@ -142,7 +142,7 @@ public final class NexusAuctionHouse extends JavaPlugin implements NexusPlugin, 
         File file = new File(new File(getDataFolder(), "data"), "sorts.json");
         if (file.exists()) return;
         try {
-            Files.copy(getResource("sorts.json"), file.toPath());
+            Files.copy(Objects.requireNonNull(getResource("sorts.json")), file.toPath());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -170,7 +170,7 @@ public final class NexusAuctionHouse extends JavaPlugin implements NexusPlugin, 
                 if (time>=binAuction.getExpiry()) {
                     if (Util.isOnline(binAuction.getSeller())) {
                         assert Bukkit.getPlayer(binAuction.getSeller()) != null;
-                        Bukkit.getPlayer(binAuction.getSeller()).sendMessage(prefix()+ChatColor.GOLD+Lang.translate("expired", getInstance()));
+                        Objects.requireNonNull(Bukkit.getPlayer(binAuction.getSeller())).sendMessage(prefix()+ChatColor.GOLD+Lang.translate("expired", getInstance()));
                     }
                     list.add(binAuction);
                 }
@@ -258,7 +258,7 @@ public final class NexusAuctionHouse extends JavaPlugin implements NexusPlugin, 
 
     @Override
     public String ver() {
-        return "2.4.5";
+        return "2.4.6";
     }
 
     @Override

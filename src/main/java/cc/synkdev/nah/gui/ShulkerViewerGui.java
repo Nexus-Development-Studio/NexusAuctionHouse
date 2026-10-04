@@ -2,7 +2,7 @@ package cc.synkdev.nah.gui;
 
 import cc.synkdev.nah.NexusAuctionHouse;
 import cc.synkdev.nah.objects.BINAuction;
-import cc.synkdev.nexusCore.bukkit.Lang;
+import cc.synkdev.nexuscore.bukkit.Lang;
 import cc.synkdev.triumph.builder.item.ItemBuilder;
 import cc.synkdev.triumph.guis.Gui;
 import cc.synkdev.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;

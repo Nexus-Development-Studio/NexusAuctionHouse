@@ -9,7 +9,7 @@ import cc.synkdev.nah.manager.Util;
 import cc.synkdev.nah.objects.BINAuction;
 import cc.synkdev.nah.objects.ItemSort;
 import cc.synkdev.nah.objects.SortingTypes;
-import cc.synkdev.nexusCore.bukkit.Lang;
+import cc.synkdev.nexuscore.bukkit.Lang;
 import cc.synkdev.triumph.builder.item.ItemBuilder;
 import cc.synkdev.triumph.components.util.GuiFiller;
 import cc.synkdev.triumph.guis.Gui;

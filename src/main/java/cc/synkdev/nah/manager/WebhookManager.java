@@ -3,7 +3,7 @@ package cc.synkdev.nah.manager;
 import cc.synkdev.nah.NexusAuctionHouse;
 import cc.synkdev.nah.objects.BINAuction;
 import cc.synkdev.nah.objects.DiscordWebhook;
-import cc.synkdev.nexusCore.bukkit.Utils;
+import cc.synkdev.nexuscore.bukkit.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -17,6 +17,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class WebhookManager {
     private WebhookManager() {
@@ -44,7 +45,7 @@ public class WebhookManager {
         } else {
             try {
                 assert core.getResource("webhook.yml") != null;
-                Files.copy(core.getResource("webhook.yml"), file.toPath());
+                Files.copy(Objects.requireNonNull(core.getResource("webhook.yml")), file.toPath());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -68,7 +69,7 @@ public class WebhookManager {
         DiscordWebhook wh = new DiscordWebhook(url);
         wh.setUsername("NexusAuctionHouse");
         wh.setAvatarUrl("https://synkdev.cc/img/nah.png");
-        String name = bA.getItem().getItemMeta().getDisplayName().isEmpty() ? bA.getItem().getType().name() : sanitizeColors(bA.getItem().getItemMeta().getDisplayName());
+        String name = Objects.requireNonNull(bA.getItem().getItemMeta()).getDisplayName().isEmpty() ? bA.getItem().getType().name() : sanitizeColors(bA.getItem().getItemMeta().getDisplayName());
         String desc = Util.sanitizeDiscordMsg(Util.addPlaceholders(config.getString("webhook-descriptions."+key), args)+"\n"+(!key.equals("ah-toggle") ? bA.getItem().getAmount()+"x "+(name) : ""));
         DiscordWebhook.EmbedObject embed = new DiscordWebhook.EmbedObject().setTitle(config.getString("webhook-titles."+key)).setDescription(desc);
         if (!key.equals("ah-toggle")) {

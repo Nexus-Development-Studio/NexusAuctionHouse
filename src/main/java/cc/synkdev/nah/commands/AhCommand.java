@@ -4,7 +4,7 @@ import cc.synkdev.nah.NexusAuctionHouse;
 import cc.synkdev.nah.api.NAHUtil;
 import cc.synkdev.nah.gui.ConfirmSellGui;
 import cc.synkdev.nah.objects.BINAuction;
-import cc.synkdev.nexusCore.bukkit.Lang;
+import cc.synkdev.nexuscore.bukkit.Lang;
 import cc.synkdev.acf.BaseCommand;
 import cc.synkdev.acf.annotation.*;
 import cc.synkdev.triumph.guis.Gui;

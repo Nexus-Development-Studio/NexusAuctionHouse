@@ -3,7 +3,7 @@ package cc.synkdev.nah.manager;
 import cc.synkdev.nah.NexusAuctionHouse;
 import cc.synkdev.nah.objects.BINAuction;
 import cc.synkdev.nah.objects.SortingTypes;
-import cc.synkdev.nexusCore.bukkit.Lang;
+import cc.synkdev.nexuscore.bukkit.Lang;
 import cc.synkdev.kyori.adventure.text.Component;
 import cc.synkdev.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;

@@ -8,7 +8,7 @@ import cc.synkdev.nah.manager.DataFileManager;
 import cc.synkdev.nah.manager.Util;
 import cc.synkdev.nah.manager.WebhookManager;
 import cc.synkdev.nah.objects.BINAuction;
-import cc.synkdev.nexusCore.bukkit.Lang;
+import cc.synkdev.nexuscore.bukkit.Lang;
 import cc.synkdev.triumph.builder.item.ItemBuilder;
 import cc.synkdev.triumph.guis.Gui;
 import cc.synkdev.triumph.guis.GuiItem;
@@ -20,6 +20,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ConfirmBuyGui {
     private final NexusAuctionHouse core = NexusAuctionHouse.getInstance();
@@ -58,7 +59,7 @@ public class ConfirmBuyGui {
                 if (core.getEcon().has(pl, bA.getPrice()+tax)) {
                     core.getEcon().withdrawPlayer(pl, bA.getPrice()+tax);
                     core.getEcon().depositPlayer(Bukkit.getOfflinePlayer(bA.getSeller()), bA.getPrice());
-                    if (Util.isOnline(bA.getSeller())) Bukkit.getPlayer(bA.getSeller()).sendMessage(core.prefix()+ChatColor.GOLD+ pl.getName()+" "+Lang.translate("smnBought", core, bA.getPrice()+""));
+                    if (Util.isOnline(bA.getSeller())) Objects.requireNonNull(Bukkit.getPlayer(bA.getSeller())).sendMessage(core.prefix()+ChatColor.GOLD+ pl.getName()+" "+Lang.translate("smnBought", core, bA.getPrice()+""));
 
                     if (pl.getInventory().firstEmpty() == -1) {
                         List<ItemStack> list = core.retrieveMap.getOrDefault(pl.getUniqueId(), new ArrayList<>());

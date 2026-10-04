@@ -3,7 +3,7 @@ package cc.synkdev.nah.gui.sort;
 import cc.synkdev.nah.NexusAuctionHouse;
 import cc.synkdev.nah.manager.Util;
 import cc.synkdev.nah.objects.ItemSort;
-import cc.synkdev.nexusCore.bukkit.Lang;
+import cc.synkdev.nexuscore.bukkit.Lang;
 import cc.synkdev.triumph.builder.item.ItemBuilder;
 import cc.synkdev.triumph.guis.Gui;
 import cc.synkdev.kyori.adventure.text.Component;
