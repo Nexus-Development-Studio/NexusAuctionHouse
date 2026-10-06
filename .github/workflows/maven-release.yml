@@ -1,0 +1,72 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - name: Build with Maven
+        run: mvn -B clean package
+
+      - name: Read version from pom.xml
+        id: version
+        run: |
+          VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Project version: $VERSION"
+
+      - name: Create or update GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          TAG="${VERSION}"
+
+          shopt -s nullglob
+          FILES=()
+          for f in target/*.jar target/*.war target/*.zip target/*.tar.gz; do
+            case "$(basename "$f")" in original-*) continue ;; esac
+            FILES+=("$f")
+          done
+
+          if [ ${#FILES[@]} -eq 0 ]; then
+            echo "No build artifacts found in target/" >&2
+            exit 1
+          fi
+
+          # Release notes = commit message of the commit that triggered this run
+          git log -1 --pretty=%B "$GITHUB_SHA" > release-notes.md
+
+          PRERELEASE_FLAG=""
+          if [[ "$VERSION" == *-DEV ]]; then
+            PRERELEASE_FLAG="--prerelease"
+          fi
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists - replacing its assets and notes"
+            gh release upload "$TAG" "${FILES[@]}" --clobber
+            gh release edit "$TAG" --notes-file release-notes.md
+          else
+            gh release create "$TAG" "${FILES[@]}" \
+              --target "$GITHUB_SHA" \
+              --title "Release $VERSION" \
+              --notes-file release-notes.md \
+              $PRERELEASE_FLAG
+          fi
