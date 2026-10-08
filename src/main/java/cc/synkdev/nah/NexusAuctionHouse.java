@@ -258,7 +258,7 @@ public final class NexusAuctionHouse extends JavaPlugin implements NexusPlugin, 
 
     @Override
     public String ver() {
-        return "2.4.6";
+        return "2.4.7";
     }
 
     @Override

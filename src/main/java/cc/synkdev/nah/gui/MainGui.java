@@ -14,7 +14,7 @@ import cc.synkdev.triumph.builder.item.ItemBuilder;
 import cc.synkdev.triumph.components.util.GuiFiller;
 import cc.synkdev.triumph.guis.Gui;
 import cc.synkdev.triumph.guis.GuiItem;
-import net.wesjd.anvilgui.AnvilGUI;
+import cc.synkdev.anvilgui.AnvilGUI;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
