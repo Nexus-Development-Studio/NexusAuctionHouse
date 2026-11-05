@@ -2,7 +2,7 @@ name: NexusAuctionHouse
 version: '${project.version}'
 main: cc.synkdev.nah.NexusAuctionHouse
 api-version: '1.18'
-authors: [ "Synk" ]
+authors: [ "Synk", "NDS" ]
 description: The easy auction house plugin you've looked for, and for free!
 website: https://synkdev.cc
 permissions:

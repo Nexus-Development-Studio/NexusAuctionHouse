@@ -125,7 +125,7 @@ public class DataFileManager {
                         id = core.getId() + 1;
                         core.setId(id);
                     }
-                    if (id > core.getId()) core.setId(id + 1);
+                    if (id >= core.getId()) core.setId(id + 1);
                     String seller = obj.getString("seller");
                     String item = obj.getString("item");
                     long price = obj.getLong("price");
